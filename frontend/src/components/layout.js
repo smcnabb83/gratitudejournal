@@ -4,7 +4,7 @@ import Header from './header';
 
 const MainLayout = styled.div`
     display: grid;
-    grid-template-rows: 100px 1fr;
+    grid-template-rows: 50px 1fr;
 `;
 
 const HeaderArea = styled.div`
