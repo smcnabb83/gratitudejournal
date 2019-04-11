@@ -1,5 +1,5 @@
-var pgp = require('pg-promise');
-var db = pgp('postgres://postgres:Dmcnan941@localhost/gratitudejournal');
+const pgp = require('pg-promise')({capSQL: true});
+var db;
 
 const dbService = {};
 
@@ -35,8 +35,8 @@ dbService.CreateUser = async function(userData){
 
     return db.none(`INSERT INTO users(userEmail, userPasswordHash, UserAuthToken, UserPasswordResetToken, 
                                         UserPasswordResetExpiry
-                    VALUES (${userEmail}, ${userPasswordhash}, ${userAuthToken}, ${userPasswordResetToken}, 
-                            ${userPasswordResetExpiry})`, {
+                    VALUES ($(userEmail), $(userPasswordhash), $(userAuthToken), $(userPasswordResetToken), 
+                            $(userPasswordResetExpiry))`, {
                                 userEmail: userData.userEmail,
                                 userPasswordhash: userData.userPasswordhash,
                                 userAuthToken: userData.userAuthToken,
@@ -47,7 +47,42 @@ dbService.CreateUser = async function(userData){
 }
 
 dbService.CreateEntry = async function(entryData){
+    if(!entryData.userEmail && !entryData.userID){
+        return Promise.reject('entryData must contain either the userID or the userEmail field');
+    }
 
+    if(!entryData.userID){
+        try{
+        entryData.userID = await db.one(`SELECT userID from users where userEmail = $1`, [entryData.userEmail]);
+        } catch(e) {
+            console.log(e);
+        }
+
+        return db.none(`INSERT INTO users(userID, entryTitle, entryBody, entryTimestamp
+                        VALUES ($(userID), $(entryTitle), $(entryBody), $(entryTimestamp))`, {
+                            userID:         entryData.userID,
+                            entryTitle:     entryData.entryTitle,
+                            entryBody:      entryData.entryBody,
+                            entryTimestamp: entryData.entryTimestamp
+                        });
+
+    }
 }
 
-exports = dbService;
+var createDBConnection = function(user, password, host, port, database){
+    const cn = {
+        host,
+        port,
+        user,
+        password,
+        database,
+    };
+    db = pgp(cn);
+    return function (req, res, next){
+        req.db = dbService;
+        next();
+    }
+    
+}
+
+module.exports.createDBConnection = createDBConnection;
