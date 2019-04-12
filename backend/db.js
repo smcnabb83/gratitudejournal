@@ -1,88 +1,99 @@
-const pgp = require('pg-promise')({capSQL: true});
-var db;
+const pgp = require('pg-promise')({ capSQL: true });
+
+let db;
 
 const dbService = {};
 
 dbService.userTemplate = {
-    userEmail: "",
-    userPasswordhash: "",
-    userAuthToken: "",
-    userPasswordResetToken: "",
-    userPasswordResetExpiry: "",
-    userFirstName: "",
-    userLastName: "",
-
+  userEmail: '',
+  userPasswordhash: '',
+  userAuthToken: '',
+  userPasswordResetToken: '',
+  userPasswordResetExpiry: '',
+  userFirstName: '',
+  userLastName: '',
 };
 
 dbService.entryTemplate = {
-    userEmail: "",
-    userID: "",
-    entryTitle: "",
-    entryBody: "",
-    entryTimestamp: ""
+  userEmail: '',
+  userID: '',
+  entryTitle: '',
+  entryBody: '',
+  entryTimestamp: '',
 };
 
+dbService.CreateUser = async userData => {
+  if (!userData.userEmail) {
+    return Promise.reject(Error('userData must contain userEmail field'));
+  }
 
+  if (!userData.userPasswordhash) {
+    return Promise.reject(
+      Error('userData must contain a userPasswordHash field')
+    );
+  }
 
-dbService.CreateUser = async function(userData){
-    if(! userData.userEmail){
-        return Promise.reject('userData must contain userEmail field');
-    }
-
-    if(!userData.userPasswordhash){
-        return Promise.reject('userData must contain a userPasswordHash field');
-    }
-
-    return db.none(`INSERT INTO users(userEmail, userPasswordHash, UserAuthToken, UserPasswordResetToken, 
+  return db.none(
+    `INSERT INTO users(userEmail, userPasswordHash, UserAuthToken, UserPasswordResetToken, 
                                         UserPasswordResetExpiry
                     VALUES ($(userEmail), $(userPasswordhash), $(userAuthToken), $(userPasswordResetToken), 
-                            $(userPasswordResetExpiry))`, {
-                                userEmail: userData.userEmail,
-                                userPasswordhash: userData.userPasswordhash,
-                                userAuthToken: userData.userAuthToken,
-                                userPasswordResetToken: userData.userPasswordResetToken,
-                                userPasswordResetExpiry: userData.userPasswordResetExpiry
-                            });
-                    
-}
-
-dbService.CreateEntry = async function(entryData){
-    if(!entryData.userEmail && !entryData.userID){
-        return Promise.reject('entryData must contain either the userID or the userEmail field');
+                            $(userPasswordResetExpiry))`,
+    {
+      userData,
     }
+  );
+};
 
-    if(!entryData.userID){
-        try{
-        entryData.userID = await db.one(`SELECT userID from users where userEmail = $1`, [entryData.userEmail]);
-        } catch(e) {
-            console.log(e);
-        }
+dbService.UserExists = userEmail => {
+  try {
+    db.none('SELECT userID from users where userEmail = $1', userEmail);
+  } catch (e) {
+    return true;
+  }
+  return false;
+};
 
-        return db.none(`INSERT INTO users(userID, entryTitle, entryBody, entryTimestamp
-                        VALUES ($(userID), $(entryTitle), $(entryBody), $(entryTimestamp))`, {
-                            userID:         entryData.userID,
-                            entryTitle:     entryData.entryTitle,
-                            entryBody:      entryData.entryBody,
-                            entryTimestamp: entryData.entryTimestamp
-                        });
+dbService.CreateEntry = async ed => {
+  const entryData = ed;
+  if (!entryData.userEmail && !entryData.userID) {
+    return Promise.reject(
+      Error('entryData must contain either the userID or the userEmail field')
+    );
+  }
 
+  if (!entryData.userID) {
+    try {
+      entryData.userID = await db.one(
+        'SELECT userID from users where userEmail = $1',
+        [entryData.userEmail]
+      );
+    } catch (e) {
+      console.log(e);
     }
-}
+  }
 
-var createDBConnection = function(user, password, host, port, database){
-    const cn = {
-        host,
-        port,
-        user,
-        password,
-        database,
-    };
-    db = pgp(cn);
-    return function (req, res, next){
-        req.db = dbService;
-        next();
+  return db.none(
+    `INSERT INTO users(userID, entryTitle, entryBody, entryTimestamp
+                        VALUES ($(userID), $(entryTitle), $(entryBody), $(entryTimestamp))`,
+    {
+      entryData,
     }
-    
-}
+  );
+};
+
+const createDBConnection = (user, password, host, port, database) => {
+  const cn = {
+    host,
+    port,
+    user,
+    password,
+    database,
+  };
+  db = pgp(cn);
+  return (req, res, next) => {
+    req.db = dbService;
+    next();
+  };
+};
 
 module.exports.createDBConnection = createDBConnection;
