@@ -15,6 +15,7 @@ const Header = props => (
     <HeaderStyle>
         <Link to="/">Home</Link>
         <Link to="/create">Create new Entry</Link>
+        <Link to="/newUser">Create new User</Link>
     </HeaderStyle>
 )
 

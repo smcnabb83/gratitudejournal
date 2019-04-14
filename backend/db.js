@@ -1,10 +1,17 @@
-const pgp = require('pg-promise')({ capSQL: true });
+const pgp = require('pg-promise')({
+  capSQL: true,
+});
+const pgmon = require('pg-monitor');
+
+pgmon.attach({ capSQL: true }, ['query', 'error']);
 
 let db;
 
-const dbService = {};
+function DbService(dbase) {
+  this.db = dbase;
+}
 
-dbService.userTemplate = {
+DbService.prototype.userTemplate = {
   userEmail: '',
   userPasswordhash: '',
   userAuthToken: '',
@@ -14,7 +21,7 @@ dbService.userTemplate = {
   userLastName: '',
 };
 
-dbService.entryTemplate = {
+DbService.prototype.entryTemplate = {
   userEmail: '',
   userID: '',
   entryTitle: '',
@@ -22,7 +29,8 @@ dbService.entryTemplate = {
   entryTimestamp: '',
 };
 
-dbService.CreateUser = async userData => {
+DbService.prototype.CreateUser = async function(userData) {
+  console.log(this);
   if (!userData.userEmail) {
     return Promise.reject(Error('userData must contain userEmail field'));
   }
@@ -33,27 +41,39 @@ dbService.CreateUser = async userData => {
     );
   }
 
-  return db.none(
+  let passwordResetExpiry = null;
+  if (
+    userData.userPasswordResetExpiry &&
+    userData.userPasswordResetExpiry !== ''
+  ) {
+    passwordResetExpiry = userData.userPasswordResetExpiry;
+  }
+  console.log(userData);
+  return this.db.none(
     `INSERT INTO users(userEmail, userPasswordHash, UserAuthToken, UserPasswordResetToken, 
-                                        UserPasswordResetExpiry
+                                        UserPasswordResetExpiry)
                     VALUES ($(userEmail), $(userPasswordhash), $(userAuthToken), $(userPasswordResetToken), 
                             $(userPasswordResetExpiry))`,
     {
-      userData,
+      userEmail: userData.userEmail,
+      userPasswordhash: userData.userPasswordhash,
+      userAuthToken: userData.userAuthToken,
+      userPasswordResetToken: userData.userPasswordResetToken,
+      userPasswordResetExpiry: passwordResetExpiry,
     }
   );
 };
 
-dbService.UserExists = userEmail => {
+DbService.prototype.UserExists = function(userEmail) {
   try {
-    db.none('SELECT userID from users where userEmail = $1', userEmail);
+    this.db.none('SELECT userID from users where userEmail = $1', userEmail);
   } catch (e) {
     return true;
   }
   return false;
 };
 
-dbService.CreateEntry = async ed => {
+DbService.prototype.CreateEntry = async function(ed) {
   const entryData = ed;
   if (!entryData.userEmail && !entryData.userID) {
     return Promise.reject(
@@ -63,7 +83,7 @@ dbService.CreateEntry = async ed => {
 
   if (!entryData.userID) {
     try {
-      entryData.userID = await db.one(
+      entryData.userID = await this.db.one(
         'SELECT userID from users where userEmail = $1',
         [entryData.userEmail]
       );
@@ -72,7 +92,7 @@ dbService.CreateEntry = async ed => {
     }
   }
 
-  return db.none(
+  return this.db.none(
     `INSERT INTO users(userID, entryTitle, entryBody, entryTimestamp
                         VALUES ($(userID), $(entryTitle), $(entryBody), $(entryTimestamp))`,
     {
@@ -90,8 +110,16 @@ const createDBConnection = (user, password, host, port, database) => {
     database,
   };
   db = pgp(cn);
+  db.connect().then(obj => {
+    obj.client.query('LISTEN "watchers"');
+    obj.client.on('notification', data => {
+      console.log(data.payload);
+    });
+  });
+
   return (req, res, next) => {
-    req.db = dbService;
+    req.db = new DbService(db);
+    console.log(req.db);
     next();
   };
 };

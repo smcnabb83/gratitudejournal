@@ -13,6 +13,7 @@
     "express-validator": "^5.3.1",
     "jsonwebtoken": "^8.5.1",
     "morgan": "~1.9.0",
+    "pg-monitor": "^1.1.0",
     "pg-promise": "^8.6.4",
     "promisify": "0.0.3",
     "sanitize": "^2.1.0"

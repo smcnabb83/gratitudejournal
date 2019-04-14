@@ -5,6 +5,7 @@ import './index.css';
 import App from './App';
 import Layout from './components/layout';
 import CreateEntry from './components/createEntry';
+import CreateUser from './components/createUser';
 import * as serviceWorker from './serviceWorker';
 
 const routing = (
@@ -12,6 +13,7 @@ const routing = (
         <Layout>
             <Route exact path="/" component={App} />
             <Route path="/create" component={CreateEntry}/>
+            <Route path="/newUser" component={CreateUser}/>
         </Layout>
     </Router>
 )

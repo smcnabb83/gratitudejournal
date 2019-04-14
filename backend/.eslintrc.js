@@ -23,6 +23,7 @@ module.exports = {
         "linebreak-style": 'off',
         "no-unused-vars": "warn",
         "no-console": "off",
+        "func-names": "off",
         "prettier/prettier": [
             "error",
             {

@@ -6,14 +6,14 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 /* GET users listing. */
-router.get('/users', (req, res) => {
+router.get('/', (req, res) => {
   res.send('respond with a resource');
 });
 
 /* POST create new user. */
 
 router.post(
-  '/users',
+  '/',
   [
     body('email')
       .exists()
@@ -26,14 +26,14 @@ router.post(
     // 1) Validate input
     // 1b) validate passwords match
     if (req.body.password !== req.body.repeatPassword) {
-      res.Write('password and repeat password do not match');
+      res.send('password and repeat password do not match');
     }
     // 2) Make sure user doesn't already exist
     if (req.db.UserExists(req.body.email)) {
       next();
     }
     // 3) If user doesn't already exist, create the user in the db
-    const hashedPass = await bcrypt.hash(req.body.password, 24);
+    const hashedPass = await bcrypt.hash(req.body.password, 10);
     // 3a) hash the provided password
     // 3b) create a jwt token for the user
     const token = jwt.sign({ email: req.body.email }, 'WellChangeThisLater');
@@ -42,12 +42,22 @@ router.post(
       userEmail: req.body.email,
       userPasswordhash: hashedPass,
       userAuthToken: token,
-      userPasswordResetToken: '',
-      userPasswordResetExpiry: '',
+      userPasswordResetToken: null,
+      userPasswordResetExpiry: null,
       userFirstName: req.body.firstName,
       userLastName: req.body.lastName,
     };
-    await req.db.CreateUser(newUser);
+    try {
+      await req.db.CreateUser(newUser);
+    } catch (e) {
+      res.send(
+        'There was an error inserting the user, check the server console for details'
+      );
+      return Promise.reject(Error('User was not successfully created'));
+    }
+    res.cookie('userInfo', token);
+    res.redirect(200, '/');
+    return Promise.resolve();
   }
 );
 
