@@ -5,7 +5,7 @@ import {FormPage, FormMainBlock, FormInput} from './styles/formstyles';
 const CreateEntry = props => {
     return (
         <FormPage>
-            <FormMainBlock method='POST' action='/entries/create' >
+            <FormMainBlock method='POST' action='/entries' >
             <h2>Create An Entry</h2>
             <FormInput>
                 <label for="title">Title</label>

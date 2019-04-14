@@ -30,7 +30,6 @@ DbService.prototype.entryTemplate = {
 };
 
 DbService.prototype.CreateUser = async function(userData) {
-  console.log(this);
   if (!userData.userEmail) {
     return Promise.reject(Error('userData must contain userEmail field'));
   }
@@ -75,6 +74,7 @@ DbService.prototype.UserExists = function(userEmail) {
 
 DbService.prototype.CreateEntry = async function(ed) {
   const entryData = ed;
+  console.log(entryData);
   if (!entryData.userEmail && !entryData.userID) {
     return Promise.reject(
       Error('entryData must contain either the userID or the userEmail field')
@@ -83,21 +83,21 @@ DbService.prototype.CreateEntry = async function(ed) {
 
   if (!entryData.userID) {
     try {
-      entryData.userID = await this.db.one(
+      const { userid } = await this.db.one(
         'SELECT userID from users where userEmail = $1',
         [entryData.userEmail]
       );
+      entryData.userID = userid;
     } catch (e) {
       console.log(e);
     }
   }
+  console.log(entryData);
 
   return this.db.none(
-    `INSERT INTO users(userID, entryTitle, entryBody, entryTimestamp
+    `INSERT INTO entries(userID, entryTitle, entryBody, entrydate)
                         VALUES ($(userID), $(entryTitle), $(entryBody), $(entryTimestamp))`,
-    {
-      entryData,
-    }
+    entryData
   );
 };
 

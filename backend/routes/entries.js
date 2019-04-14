@@ -16,9 +16,24 @@ router.post(
       .escape(),
   ],
   (req, res, next) => {
-    // Check if user is logged in
-    next();
+    if (!req.userEmail) {
+      console.log('you need to be logged in to do this');
+      next();
+    }
+    const entryInfo = {
+      userEmail: req.userEmail,
+      entryTitle: req.body.title,
+      entryBody: req.body.body,
+      entryTimestamp: new Date(),
+    };
+    req.db
+      .CreateEntry(entryInfo)
+      .then(res.redirect(200, `${process.env.FRONTEND_SERVER}/`))
+      .catch(function(error) {
+        console.log(error);
+      });
     // Insert entry into db
+    next();
   }
 );
 

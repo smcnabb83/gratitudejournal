@@ -55,7 +55,7 @@ router.post(
       );
       return Promise.reject(Error('User was not successfully created'));
     }
-    res.cookie('userInfo', token);
+    res.cookie('userData', token);
     res.redirect(200, '/');
     return Promise.resolve();
   }
