@@ -36,7 +36,7 @@ router.post(
     const hashedPass = await bcrypt.hash(req.body.password, 10);
     // 3a) hash the provided password
     // 3b) create a jwt token for the user
-    const token = jwt.sign({ email: req.body.email }, 'WellChangeThisLater');
+    const token = jwt.sign({ email: req.body.email }, process.env.JWT_KEY);
     // 3c) insert the user into the db
     const newUser = {
       userEmail: req.body.email,
