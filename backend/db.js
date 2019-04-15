@@ -39,28 +39,19 @@ DbService.prototype.CreateUser = async function(userData) {
       Error('userData must contain a userPasswordHash field')
     );
   }
-
-  let passwordResetExpiry = null;
-  if (
-    userData.userPasswordResetExpiry &&
-    userData.userPasswordResetExpiry !== ''
-  ) {
-    passwordResetExpiry = userData.userPasswordResetExpiry;
-  }
-  console.log(userData);
-  return this.db.none(
-    `INSERT INTO users(userEmail, userPasswordHash, UserAuthToken, UserPasswordResetToken, 
-                                        UserPasswordResetExpiry)
+  try {
+    return this.db.result(
+      `INSERT INTO users(userEmail, userPasswordHash, UserAuthToken, UserPasswordResetToken, 
+                                        UserPasswordResetExpiry, userFirstName, userLastName)
                     VALUES ($(userEmail), $(userPasswordhash), $(userAuthToken), $(userPasswordResetToken), 
-                            $(userPasswordResetExpiry))`,
-    {
-      userEmail: userData.userEmail,
-      userPasswordhash: userData.userPasswordhash,
-      userAuthToken: userData.userAuthToken,
-      userPasswordResetToken: userData.userPasswordResetToken,
-      userPasswordResetExpiry: passwordResetExpiry,
-    }
-  );
+                            $(userPasswordResetExpiry), $(userFirstName), $(userLastName))`,
+      userData
+    );
+  } catch (e) {
+    console.log('rejected promise in CreateUser');
+    console.log(e);
+    return Promise.reject(e);
+  }
 };
 
 DbService.prototype.UserExists = function(userEmail) {
@@ -74,7 +65,6 @@ DbService.prototype.UserExists = function(userEmail) {
 
 DbService.prototype.CreateEntry = async function(ed) {
   const entryData = ed;
-  console.log(entryData);
   if (!entryData.userEmail && !entryData.userID) {
     return Promise.reject(
       Error('entryData must contain either the userID or the userEmail field')

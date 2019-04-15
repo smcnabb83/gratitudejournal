@@ -2,6 +2,7 @@ require('dotenv').config({ path: 'variables.env' });
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
 const logger = require('morgan');
 const jwt = require('jsonwebtoken');
 const entries = require('./routes/entries');
@@ -15,16 +16,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use(cookieParser());
+app.use(bodyParser.json());
 
 app.use((req, res, next) => {
-  console.log('cookies are');
-  console.log(req.cookies);
   const { userData } = req.cookies;
   if (userData) {
     const { email } = jwt.decode(userData, process.env.JWT_KEY);
     req.userEmail = email;
-    console.log('User Email Received!');
-    console.log(req.userEmail);
   }
   next();
 });
