@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Header from './header';
+import Errors from './errorDisplay';
 
 const MainLayout = styled.div`
     display: grid;
@@ -21,6 +22,7 @@ const Layout = props => {
             <Header/>
         </HeaderArea>
         <BodyArea>
+            <Errors/>
             {props.children}
         </BodyArea>
 

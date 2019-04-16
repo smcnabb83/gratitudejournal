@@ -1,13 +1,14 @@
 import React, {useState} from 'react';
 import {Redirect} from 'react-router-dom';
 import Axios from 'axios';
+import {SetErrors} from './errorDisplay';
 
 import {FormPage, FormMainBlock, FormInput} from './styles/formstyles';
 
 const onSubmit = (event, eventData, setIsSubmitted) => {
 
     event.preventDefault();
-     Axios.post('/users', eventData).then(setIsSubmitted(true)).catch(e => console.log(e.response.data));
+     Axios.post('/users', eventData).then((e) => {if(!e.response.data.errors) setIsSubmitted(true);}).catch(e => {SetErrors(e.response.data.errors); setIsSubmitted(false)});
 
 }
 
