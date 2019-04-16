@@ -40,11 +40,11 @@ DbService.prototype.CreateUser = async function(userData) {
     );
   }
   try {
-    return this.db.result(
+    return this.db.one(
       `INSERT INTO users(userEmail, userPasswordHash, UserAuthToken, UserPasswordResetToken, 
                                         UserPasswordResetExpiry, userFirstName, userLastName)
                     VALUES ($(userEmail), $(userPasswordhash), $(userAuthToken), $(userPasswordResetToken), 
-                            $(userPasswordResetExpiry), $(userFirstName), $(userLastName))`,
+                            $(userPasswordResetExpiry), $(userFirstName), $(userLastName)) RETURNING userid`,
       userData
     );
   } catch (e) {
@@ -55,12 +55,11 @@ DbService.prototype.CreateUser = async function(userData) {
 };
 
 DbService.prototype.UserExists = function(userEmail) {
-  try {
-    this.db.none('SELECT userID from users where userEmail = $1', userEmail);
-  } catch (e) {
-    return true;
-  }
-  return false;
+  let exists = false;
+  this.db
+    .none('SELECT userID from users where userEmail = $1', userEmail)
+    .catch((exists = true));
+  return exists;
 };
 
 DbService.prototype.CreateEntry = async function(ed) {

@@ -57,6 +57,8 @@ router.post(
 
     console.log('finished user existence check');
     const hashedPass = await bcrypt.hash(req.body.password, 10);
+    let userid;
+
     const token = jwt.sign({ email: req.body.email }, process.env.JWT_KEY);
     const newUser = {
       userEmail: req.body.email,
@@ -68,7 +70,7 @@ router.post(
       userLastName: req.body.lastName,
     };
     try {
-      await req.db.CreateUser(newUser);
+      userid = await req.db.CreateUser(newUser);
     } catch (e) {
       console.log(e);
       res.status(422).json({
@@ -78,6 +80,7 @@ router.post(
       });
       return;
     }
+    console.log(userid);
     res.cookie('userData', token);
     res.send('successful');
   }
