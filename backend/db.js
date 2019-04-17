@@ -90,6 +90,52 @@ DbService.prototype.CreateEntry = async function(ed) {
   );
 };
 
+// GetUserID gets the logged in user's ID.
+DbService.prototype.GetUserID = async function(email) {
+  let ret;
+  try {
+    ret = await this.db.one(
+      'SELECT userid FROM users where useremail = $1',
+      email
+    );
+  } catch (e) {
+    console.log(e);
+    ret = { error: 'a user with that email does not exist' };
+  }
+  return ret;
+};
+
+DbService.prototype.GetUserEntries = async function(userid) {
+  let ret;
+  try {
+    ret = await this.db.any(
+      'SELECT entryid, entrytitle, entrydate FROM entries where userid = $1',
+      userid
+    );
+  } catch (e) {
+    ret = { errors: ['There are no entries for this user to retrieve'] };
+  }
+  return ret;
+};
+
+DbService.prototype.GetEntryDetail = async function(entryid) {
+  let ret;
+  try {
+    ret = await this.db.one(
+      'SELECT entrybody, userid FROM entries where entryid = $1',
+      entryid
+    );
+  } catch (e) {
+    console.log(e);
+    ret = {
+      errors: [
+        'There was an error retrieving this entry. If this continues, please contact the webmaster',
+      ],
+    };
+  }
+  return ret;
+};
+
 const createDBConnection = (user, password, host, port, database) => {
   const cn = {
     host,
@@ -108,7 +154,6 @@ const createDBConnection = (user, password, host, port, database) => {
 
   return (req, res, next) => {
     req.db = new DbService(db);
-    console.log(req.db);
     next();
   };
 };
