@@ -17,7 +17,7 @@ router.post('/logon', async (req, res) => {
 
   // check to make sure user isn't already logged on
   if (req.userEmail) {
-    res.status(200).json({ error: 'User is already logged in' });
+    res.status(422).json({ errors: ['User is already logged in'] });
     return;
   }
   // Get user info from database
@@ -25,8 +25,9 @@ router.post('/logon', async (req, res) => {
   const userLogonInfo = await req.db.GetUserLogonInformation(username);
   if (userLogonInfo.error) {
     res.status(422).json({
-      error:
+      errors: [
         'The username or password you provided was invalid. If you believe this to be in error, please contact the webmaster',
+      ],
     });
     return;
   }
@@ -38,8 +39,9 @@ router.post('/logon', async (req, res) => {
     console.log('password invalid');
 
     res.status(422).json({
-      error:
+      errors: [
         'The username or password you provided was invalid. If you believe this to be in error, please contact the webmaster',
+      ],
     });
     return;
   }
