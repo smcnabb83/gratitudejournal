@@ -62,6 +62,18 @@ DbService.prototype.UserExists = function(userEmail) {
   return exists;
 };
 
+DbService.prototype.GetUserLogonInformation = async function(userEmail) {
+  try {
+    const { userPassword } = await this.db.one(
+      'SELECT userpasswordhash from users where useremail = $1',
+      userEmail
+    );
+    return { pass: userPassword };
+  } catch (e) {
+    return { error: e };
+  }
+};
+
 DbService.prototype.CreateEntry = async function(ed) {
   const entryData = ed;
   if (!entryData.userEmail && !entryData.userID) {

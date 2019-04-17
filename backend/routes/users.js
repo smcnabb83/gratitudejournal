@@ -10,6 +10,50 @@ router.get('/', (req, res) => {
   res.send('respond with a resource');
 });
 
+/* POST log a user on */
+router.post('/logon', async (req, res) => {
+  const { username } = req.body;
+  const { password } = req.body;
+  let passResponse;
+
+  // check to make sure user isn't already logged on
+  if (req.userEmail) {
+    res.status(200).json({ error: 'User is already logged in' });
+    return;
+  }
+  // Get user info from database
+
+  const userLogonInfo = await this.db.GetUserLogonInformation(username);
+  if (userLogonInfo.error) {
+    res.status(422).json({
+      error:
+        'The username or password you provided was invalid. If you believe this to be in error, please contact the webmaster',
+    });
+  }
+  // Compare password to hash in database
+  bcrypt.compare(password, userLogonInfo.pass, function(err, resp) {
+    if (err) {
+      res.status(422).json({ error: err });
+      return;
+    }
+    passResponse = resp;
+  });
+  if (!passResponse) {
+    res.status(422).json({
+      error:
+        'The username or password you provided was invalid. If you believe this to be in error, please contact the webmaster',
+    });
+    return;
+  }
+
+  // Create new JWT for user
+  const token = jwt.sign({ email: username }, process.env.JWT_KEY);
+  // Return cookie to user
+
+  res.cookie('userData', token);
+  res.send('successful');
+});
+
 /* POST create new user. */
 
 router.post(
