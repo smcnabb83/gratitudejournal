@@ -14,7 +14,6 @@ router.get('/', (req, res) => {
 router.post('/logon', async (req, res) => {
   const { username } = req.body;
   const { password } = req.body;
-  let passResponse;
 
   // check to make sure user isn't already logged on
   if (req.userEmail) {
@@ -23,33 +22,32 @@ router.post('/logon', async (req, res) => {
   }
   // Get user info from database
 
-  const userLogonInfo = await this.db.GetUserLogonInformation(username);
+  const userLogonInfo = await req.db.GetUserLogonInformation(username);
   if (userLogonInfo.error) {
-    res.status(422).json({
-      error:
-        'The username or password you provided was invalid. If you believe this to be in error, please contact the webmaster',
-    });
-  }
-  // Compare password to hash in database
-  bcrypt.compare(password, userLogonInfo.pass, function(err, resp) {
-    if (err) {
-      res.status(422).json({ error: err });
-      return;
-    }
-    passResponse = resp;
-  });
-  if (!passResponse) {
     res.status(422).json({
       error:
         'The username or password you provided was invalid. If you believe this to be in error, please contact the webmaster',
     });
     return;
   }
+  // Compare password to hash in database
+  console.log(userLogonInfo);
+  const passResponse = await bcrypt.compare(password, userLogonInfo.pass);
+  console.log('post compErr');
+  if (!passResponse) {
+    console.log('password invalid');
 
+    res.status(422).json({
+      error:
+        'The username or password you provided was invalid. If you believe this to be in error, please contact the webmaster',
+    });
+    return;
+  }
+  console.log('password validation');
   // Create new JWT for user
   const token = jwt.sign({ email: username }, process.env.JWT_KEY);
   // Return cookie to user
-
+  console.log('token');
   res.cookie('userData', token);
   res.send('successful');
 });

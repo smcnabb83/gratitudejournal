@@ -1,6 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import styled from 'styled-components';
+import {SetErrors} from './errorDisplay';
 
 const HeaderStyle = styled.div`
     display: flex;
@@ -13,9 +14,10 @@ const HeaderStyle = styled.div`
 
 const Header = props => (
     <HeaderStyle>
-        <Link to="/">Home</Link>
-        <Link to="/create">Create new Entry</Link>
-        <Link to="/newUser">Create new User</Link>
+        <Link onClick={() => SetErrors(null)} to="/">Home</Link>
+        <Link onClick={() => SetErrors(null)} to="/create">Create new Entry</Link>
+        <Link onClick={() => SetErrors(null)} to="/newUser">Create new User</Link>
+        <Link onClick={() => SetErrors(null)} to="/logon">Log on</Link>
     </HeaderStyle>
 )
 

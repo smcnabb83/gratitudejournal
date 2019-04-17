@@ -58,17 +58,21 @@ DbService.prototype.UserExists = function(userEmail) {
   let exists = false;
   this.db
     .none('SELECT userID from users where userEmail = $1', userEmail)
-    .catch((exists = true));
+    .catch(e => {
+      console.log(e);
+      exists = true;
+    });
   return exists;
 };
 
 DbService.prototype.GetUserLogonInformation = async function(userEmail) {
   try {
-    const { userPassword } = await this.db.one(
+    const { userpasswordhash } = await this.db.one(
       'SELECT userpasswordhash from users where useremail = $1',
       userEmail
     );
-    return { pass: userPassword };
+    console.log(userpasswordhash);
+    return { pass: userpasswordhash };
   } catch (e) {
     return { error: e };
   }
