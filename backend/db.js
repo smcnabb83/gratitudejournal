@@ -54,14 +54,16 @@ DbService.prototype.CreateUser = async function(userData) {
   }
 };
 
-DbService.prototype.UserExists = function(userEmail) {
+DbService.prototype.UserExists = async function(userEmail) {
   let exists = false;
-  this.db
-    .none('SELECT userID from users where userEmail = $1', userEmail)
-    .catch(e => {
-      console.log(e);
-      exists = true;
-    });
+  try {
+    await this.db.none(
+      'SELECT userID from users where userEmail = $1',
+      userEmail
+    );
+  } catch (e) {
+    exists = true;
+  }
   return exists;
 };
 
