@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import Styled from 'styled-components';
 import axios from 'axios';
+import Markdown from 'react-remarkable';
+
 
 const ViewLayout = Styled.div`
     display: grid;
@@ -56,15 +58,12 @@ const ViewEntries = props => {
 
         fetchData();
     }, []);
-
     return(
         <ViewLayout>
             <EntriesArea>
                 {entries && entries.map(entry => <EntryTemplate entry={entry} key={entry.entryid} setEntry={setCurrentEntryBody}/>)}
             </EntriesArea>
-            <p>
-                {currentEntryBody}
-            </p>
+            <Markdown source={currentEntryBody}/>
         </ViewLayout>
     )
 }
