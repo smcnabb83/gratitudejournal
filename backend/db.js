@@ -62,6 +62,7 @@ DbService.prototype.UserExists = async function(userEmail) {
       userEmail
     );
   } catch (e) {
+    console.log(e);
     exists = true;
   }
   return exists;

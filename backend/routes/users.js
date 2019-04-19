@@ -93,7 +93,7 @@ router.post(
       return;
     }
     // 2) Make sure user doesn't already exist
-    if (req.db.UserExists(req.body.email)) {
+    if (await req.db.UserExists(req.body.email)) {
       console.log('user exists');
       res.status(422).json({ errors: ['User already exists'] });
       return;
