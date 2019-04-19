@@ -7,6 +7,7 @@ import Layout from './components/layout';
 import CreateEntry from './components/createEntry';
 import CreateUser from './components/createUser';
 import LogonUser from './components/logonUser';
+import ViewEntries from './components/viewEntries';
 import * as serviceWorker from './serviceWorker';
 
 const routing = (
@@ -16,6 +17,7 @@ const routing = (
             <Route path="/create"  component={CreateEntry}/>
             <Route path="/newUser"  component={CreateUser}/>
             <Route path='/logon'  component={LogonUser}/>
+            <Route path='/entries' component={ViewEntries}/>
         </Layout>
     </Router>
 )
