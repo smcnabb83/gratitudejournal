@@ -7,11 +7,16 @@ import Markdown from 'react-remarkable';
 const ViewLayout = Styled.div`
     display: grid;
     grid-template-columns: 1fr 3fr;
+    overflow:hidden;
+    height: 90vh;
 `;
 
 const EntriesArea = Styled.div`
     display: flex;
     flex-direction: column;
+    flex-grow:1;
+    overflow-y: auto;
+    height: inherit;
 `;
 
 const MainEntryArea = Styled.div`
@@ -20,7 +25,19 @@ const MainEntryArea = Styled.div`
     cursor: pointer;
 `;
 
+const EntryDisplayArea = Styled.div`
+    display: flex;
+    flex-direction: column;
+    flex-grow:1;
+    overflow-y: auto;
+    height: inherit;
+`;
+
 const EntryTitle = Styled.h2`
+    text-align: center;
+`;
+
+const EntryTime = Styled.h5`
     text-align: center;
 `;
 
@@ -36,7 +53,7 @@ const EntryTemplate = props => {
     return(
         <MainEntryArea onClick={() => GetSelectedEntryBody(entryid, props.setEntry)}>
             <EntryTitle>{entrytitle}</EntryTitle>
-            <p>{entrydate}</p>
+            <EntryTime>{new Date(entrydate).toDateString()}</EntryTime>
         </MainEntryArea>
     )
 }
@@ -61,9 +78,11 @@ const ViewEntries = props => {
     return(
         <ViewLayout>
             <EntriesArea>
-                {entries && entries.map(entry => <EntryTemplate entry={entry} key={entry.entryid} setEntry={setCurrentEntryBody}/>)}
+                {entries && entries.sort((entry, entry2) => new Date(entry2.entrydate) - new Date(entry.entrydate)).map(entry => <EntryTemplate entry={entry} key={entry.entryid} setEntry={setCurrentEntryBody}/>)}
             </EntriesArea>
-            <Markdown source={currentEntryBody}/>
+            <EntryDisplayArea>
+                <Markdown source={currentEntryBody}/>
+            </EntryDisplayArea>
         </ViewLayout>
     )
 }
