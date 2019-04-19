@@ -7,6 +7,22 @@ const ErrorBox = styled.div`
     border-radius: 10px;
     margin: 10px;
     text-align: center;
+    display: flex;
+    justify-content: space-between;
+`;
+
+const ErrorExit = styled.button`
+    background: inherit;
+    border: none;
+    color: inherit;
+    font-size: 1.4rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 10px;
+`;
+
+const ErrorText = styled.p`
+    margin-left: 10px;
 `;
 
 let SetErrors;
@@ -30,8 +46,8 @@ const DisplayError = props => {
         <div>
             {errorMsgs.map((error, index) => (
                 <ErrorBox key={index}>
-                    <p>{error}</p>
-                    <button onClick={() => removeError(index, errors, setErrors)}>X</button>
+                    <ErrorText>{error}</ErrorText>
+                    <ErrorExit onClick={() => removeError(index, errors, setErrors)}>X</ErrorExit>
                 </ErrorBox>
             ))}
         </div>

@@ -26,7 +26,7 @@ const LogonUser = props => {
     return (
         <FormPage>
             <FormMainBlock onSubmit={e => onSubmit(e, formData, setIsSubmitted)} >
-            <h2>Sign up</h2>
+            <h2>Log In</h2>
             <FormInput>
                 <label htmlFor="email">Email</label>
                 <input name="email" type="text" value={email} onChange = {e => setEmail(e.target.value)} required/>
