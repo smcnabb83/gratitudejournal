@@ -1,8 +1,7 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import Styled from 'styled-components';
 import axios from 'axios';
 import Markdown from 'react-remarkable';
-
 
 const ViewLayout = Styled.div`
     display: grid;
@@ -41,50 +40,59 @@ const EntryTime = Styled.h5`
     text-align: center;
 `;
 
-const GetSelectedEntryBody = async(entryId, set) => {
-    const response = await axios(`/entries/${entryId}`);
-    console.log(response);
-    set(response.data.entrybody);
-}
+const GetSelectedEntryBody = async (entryId, set) => {
+  const response = await axios(`/entries/${entryId}`);
+  console.log(response);
+  set(response.data.entrybody);
+};
 
 const EntryTemplate = props => {
+  const { entry, setEntry } = props;
+  const { entrytitle, entrydate, entryid } = entry;
+  return (
+    <MainEntryArea onClick={() => GetSelectedEntryBody(entryid, setEntry)}>
+      <EntryTitle>{entrytitle}</EntryTitle>
+      <EntryTime>{new Date(entrydate).toDateString()}</EntryTime>
+    </MainEntryArea>
+  );
+};
 
-    const {entrytitle, entrydate, entryid} = props.entry;
-    return(
-        <MainEntryArea onClick={() => GetSelectedEntryBody(entryid, props.setEntry)}>
-            <EntryTitle>{entrytitle}</EntryTitle>
-            <EntryTime>{new Date(entrydate).toDateString()}</EntryTime>
-        </MainEntryArea>
-    )
-}
+const ViewEntries = () => {
+  const [entries, setEntries] = useState();
+  const [currentEntryBody, setCurrentEntryBody] = useState();
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await axios('entries/user');
+      console.log(result);
+      setEntries(result.data);
+      console.log(entries);
+    };
 
-const ViewEntries = props => {
-    const [entries, setEntries] = useState();
-    const [currentEntryBody, setCurrentEntryBody] = useState();
-
-    useEffect(() => {
-        const fetchData = async () => {
-        const result = await axios(
-            'entries/user'
-        );
-        console.log(result);
-        setEntries(result.data);
-        console.log(entries);
-        };
-
-        fetchData();
-    }, []);
-    return(
-        <ViewLayout>
-            <EntriesArea>
-                {entries && entries.sort((entry, entry2) => new Date(entry2.entrydate) - new Date(entry.entrydate)).map(entry => <EntryTemplate entry={entry} key={entry.entryid} setEntry={setCurrentEntryBody}/>)}
-            </EntriesArea>
-            <EntryDisplayArea>
-                <Markdown source={currentEntryBody}/>
-            </EntryDisplayArea>
-        </ViewLayout>
-    )
-}
+    fetchData();
+  }, []);
+  return (
+    <ViewLayout>
+      <EntriesArea>
+        {entries &&
+          entries
+            .sort(
+              (entry, entry2) =>
+                new Date(entry2.entrydate) - new Date(entry.entrydate)
+            )
+            .map(entry => (
+              <EntryTemplate
+                entry={entry}
+                key={entry.entryid}
+                setEntry={setCurrentEntryBody}
+              />
+            ))}
+      </EntriesArea>
+      <EntryDisplayArea>
+        <Markdown source={currentEntryBody} />
+      </EntryDisplayArea>
+    </ViewLayout>
+  );
+};
 
 export default ViewEntries;
