@@ -34,7 +34,7 @@ const LogonUser = () => {
         <h2>Log In</h2>
         <FormInput>
           <label htmlFor="email">
-            Email
+            <span>Email</span>
             <input
               name="email"
               type="text"
@@ -46,7 +46,7 @@ const LogonUser = () => {
         </FormInput>
         <FormInput>
           <label htmlFor="password">
-            Password
+            <span>Password</span>
             <input
               name="password"
               type="password"

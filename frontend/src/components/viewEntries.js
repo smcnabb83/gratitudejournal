@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Styled from 'styled-components';
 import axios from 'axios';
 import Markdown from 'react-remarkable';
+import PropTypes from 'proptypes';
 
 const ViewLayout = Styled.div`
     display: grid;
@@ -93,6 +94,15 @@ const ViewEntries = () => {
       </EntryDisplayArea>
     </ViewLayout>
   );
+};
+
+EntryTemplate.propTypes = {
+  entry: PropTypes.shape({
+    entrydate: PropTypes.string,
+    entryid: PropTypes.string,
+    entrytitle: PropTypes.string,
+  }).isRequired,
+  setEntry: PropTypes.func.isRequired,
 };
 
 export default ViewEntries;

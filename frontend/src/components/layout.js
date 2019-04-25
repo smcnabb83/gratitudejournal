@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
+import PropTypes from 'proptypes';
 import Header from './header';
 import Errors from './errorDisplay';
 
@@ -17,6 +18,7 @@ const BodyArea = styled.div`
 `;
 
 const Layout = props => {
+  const { children } = props;
   return (
     <MainLayout>
       <HeaderArea>
@@ -24,10 +26,17 @@ const Layout = props => {
       </HeaderArea>
       <BodyArea>
         <Errors />
-        {props.children}
+        {children}
       </BodyArea>
     </MainLayout>
   );
+};
+
+Layout.propTypes = {
+  children: PropTypes.oneOfType([
+    PropTypes.arrayOf(PropTypes.node),
+    PropTypes.node,
+  ]).isRequired,
 };
 
 export default Layout;

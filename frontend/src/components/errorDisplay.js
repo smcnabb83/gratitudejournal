@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 const ErrorBox = styled.div`
@@ -25,6 +25,7 @@ const ErrorText = styled.p`
   margin-left: 10px;
 `;
 
+// eslint-disable-next-line import/no-mutable-exports
 let SetErrors;
 
 const removeError = (errorIndex, errors, setErrors) => {
@@ -44,6 +45,7 @@ const DisplayError = props => {
     return (
       <div>
         {errorMsgs.map((error, index) => (
+          // eslint-disable-next-line react/no-array-index-key
           <ErrorBox key={index}>
             <ErrorText>{error}</ErrorText>
             <ErrorExit onClick={() => removeError(index, errors, setErrors)}>

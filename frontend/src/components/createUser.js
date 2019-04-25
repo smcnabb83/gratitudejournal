@@ -37,7 +37,7 @@ const CreateUser = () => {
         <h2>Sign up</h2>
         <FormInput>
           <label htmlFor="email">
-            Email
+            <span>Email</span>
             <input
               name="email"
               type="text"
@@ -49,7 +49,7 @@ const CreateUser = () => {
         </FormInput>
         <FormInput>
           <label htmlFor="password">
-            Password
+            <span>Password</span>
             <input
               name="password"
               type="password"
@@ -61,7 +61,7 @@ const CreateUser = () => {
         </FormInput>
         <FormInput>
           <label htmlFor="repeatPassword">
-            Repeat Password
+            <span>Repeat Password</span>
             <input
               name="repeatPassword"
               type="password"
@@ -73,7 +73,7 @@ const CreateUser = () => {
         </FormInput>
         <FormInput>
           <label htmlFor="firstName">
-            First Name
+            <span>First Name</span>
             <input
               name="firstName"
               type="text"
@@ -85,7 +85,7 @@ const CreateUser = () => {
         </FormInput>
         <FormInput>
           <label htmlFor="lastName">
-            Last Name
+            <span>Last Name</span>
             <input
               name="lastName"
               type="text"
