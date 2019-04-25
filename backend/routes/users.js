@@ -5,9 +5,22 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
-/* GET users listing. */
-router.get('/', (req, res) => {
-  res.send('respond with a resource');
+/* GET check for valid jwt */
+router.get('/:jwt', (req, res) => {
+  let decoded;
+  try {
+    decoded = jwt.verify(req.params.jwt, process.env.JWT_KEY);
+  } catch (err) {
+    res.status(401).json({
+      errors: [
+        'The supplied token is either not valid, is malformed, or is expired. Please log in again.',
+      ],
+      valid: false,
+    });
+  }
+  res.status(200).json({
+    valid: true,
+  });
 });
 
 /* POST log a user on */
