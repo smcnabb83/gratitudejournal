@@ -1,11 +1,12 @@
 const express = require('express');
 const { body } = require('express-validator/check');
+const { errorTypes } = require('../middleware/error_handling');
 
 const router = express.Router();
 
 const checkUserLoggedIn = (req, res, next) => {
   if (!req.userEmail) {
-    res.status(403).json({ errors: ['You need to be logged in to do that'] });
+    res.status(403).json({ errors: errorTypes.USER_NOT_LOGGED_IN });
     return;
   }
   next();
@@ -13,7 +14,7 @@ const checkUserLoggedIn = (req, res, next) => {
 
 const createNewEntry = (req, res, next) => {
   if (!req.userEmail) {
-    console.log('you need to be logged in to do this');
+    res.status(403).json({ errors: errorTypes.USER_NOT_LOGGED_IN });
     next();
   }
   console.log('request body');
@@ -68,9 +69,7 @@ const getEntryByEntryID = async (req, res) => {
   }
 
   if (entryDetail.userid !== response.userid) {
-    res
-      .status(422)
-      .json({ errors: ['you are not authorized to view this entry'] });
+    res.status(422).json({ errors: [errorTypes.USER_NOT_AUTHORIZED] });
     return;
   }
 
@@ -98,9 +97,5 @@ router.get('/user', checkUserLoggedIn, getEntriesByUserID);
 
 // GET entries by entryID
 router.get('/:id', checkUserLoggedIn, getEntryByEntryID);
-
-router.get('/', (req, res) => {
-  res.send('This route also works');
-});
 
 module.exports = router;
