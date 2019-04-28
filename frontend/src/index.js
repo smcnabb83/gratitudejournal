@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Route, BrowserRouter as Router} from 'react-router-dom';
+import { Route, BrowserRouter as Router } from 'react-router-dom';
 import './index.css';
 import App from './App';
 import Layout from './components/layout';
@@ -11,17 +11,16 @@ import ViewEntries from './components/viewEntries';
 import * as serviceWorker from './serviceWorker';
 
 const routing = (
-    <Router>
-        <Layout>
-            <Route exact path="/"  component={App} />
-            <Route path="/create"  component={CreateEntry}/>
-            <Route path="/newUser"  component={CreateUser}/>
-            <Route path='/logon'  component={LogonUser}/>
-            <Route path='/entries' component={ViewEntries}/>
-        </Layout>
-    </Router>
-)
-
+  <Router>
+    <Layout>
+      <Route exact path="/" component={App} />
+      <Route path="/create" component={CreateEntry} />
+      <Route path="/newUser" component={CreateUser} />
+      <Route path="/logon" component={LogonUser} />
+      <Route path="/entries" component={ViewEntries} />
+    </Layout>
+  </Router>
+);
 
 ReactDOM.render(routing, document.getElementById('root'));
 

@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import Axios from 'axios';
-import Cookies from 'js-cookie';
 import { SetErrors } from './errorDisplay';
+import UserContext from './context/UserContext';
 
 const HeaderStyle = styled.div`
   display: flex;
@@ -14,41 +13,28 @@ const HeaderStyle = styled.div`
   }
 `;
 
-const Header = () => {
-  const [isLoggedOn, setIsLoggedOn] = useState(false);
+const funcs = {
+  isLoggedOn: null,
+  setIsLoggedOn: null,
+};
 
-  useEffect(() => {
-    async function checkLoggedOnStatus() {
-      const userCookie = Cookies.get('userData');
-      console.log(`usercookie: ${userCookie}`);
-      if (userCookie) {
-        try {
-          const resp = await Axios(`/users/${userCookie}`);
-          setIsLoggedOn(resp.data.valid);
-          return;
-        } catch (e) {
-          // This is expected if we're not logged in, so do nothing
-        }
-      }
-      setIsLoggedOn(false);
-    }
-    checkLoggedOnStatus();
-  }, []);
+const Header = () => {
+  const User = useContext(UserContext);
   return (
     <HeaderStyle>
       <Link onClick={() => SetErrors(null)} to="/">
         Home
       </Link>
-      <Link hidden={!isLoggedOn} onClick={() => SetErrors(null)} to="/create">
+      <Link hidden={!User.UserID} onClick={() => SetErrors(null)} to="/create">
         Create new Entry
       </Link>
-      <Link hidden={isLoggedOn} onClick={() => SetErrors(null)} to="/newUser">
+      <Link hidden={User.UserID} onClick={() => SetErrors(null)} to="/newUser">
         Create new User
       </Link>
-      <Link hidden={isLoggedOn} onClick={() => SetErrors(null)} to="/logon">
+      <Link hidden={User.UserID} onClick={() => SetErrors(null)} to="/logon">
         Log on
       </Link>
-      <Link hidden={!isLoggedOn} onClick={() => SetErrors(null)} to="/entries">
+      <Link hidden={!User.UserID} onClick={() => SetErrors(null)} to="/entries">
         My Entries
       </Link>
     </HeaderStyle>
@@ -56,3 +42,4 @@ const Header = () => {
 };
 
 export default Header;
+export { funcs };
