@@ -39,10 +39,10 @@ const LogonUser = () => {
 
   return (
     <FormPage>
+      <h2>Log In</h2>
       <FormMainBlock
         onSubmit={e => onSubmit(e, formData, setIsSubmitted, User)}
       >
-        <h2>Log In</h2>
         <FormInput>
           <label htmlFor="email">
             <span>Email</span>

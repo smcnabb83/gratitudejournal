@@ -1,10 +1,16 @@
 import React, { useState, useContext } from 'react';
 import Axios from 'axios';
 import { Redirect } from 'react-router-dom';
+import Markdown from 'react-remarkable';
 import { SetErrors } from './errorDisplay';
 import UserContext from './context/UserContext';
 
-import { FormPage, FormMainBlock, FormInput } from './styles/formstyles';
+import {
+  FormPage,
+  FormMainBlock,
+  FormInput,
+  EditPreview,
+} from './styles/formstyles';
 
 const onSubmit = (event, eventData, setIsSubmitted, setIsLoginError) => {
   event.preventDefault();
@@ -38,12 +44,13 @@ const CreateEntry = () => {
 
   return (
     <FormPage>
+      <h2>Create An Entry</h2>
       <FormMainBlock
+        editor="yes"
         method="POST"
         action="/entries"
         onSubmit={e => onSubmit(e, formData, setIsSubmitted, setIsLoginError)}
       >
-        <h2>Create An Entry</h2>
         <FormInput>
           <label htmlFor="title">
             Title
@@ -72,6 +79,10 @@ const CreateEntry = () => {
           Submit
         </button>
       </FormMainBlock>
+      <EditPreview className="Preview">
+        <h1 cssClass="title">{title}</h1>
+        <Markdown source={entry} />
+      </EditPreview>
     </FormPage>
   );
 };
