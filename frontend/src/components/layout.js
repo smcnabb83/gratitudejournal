@@ -27,11 +27,9 @@ const Layout = props => {
     Axios(`users/${cookie || 'a'}`)
       .then(() => {
         SetUserID(cookie);
-        console.log('Set State');
       })
       .catch(() => {
         SetUserID(null);
-        console.log(`error. cookie is ${cookie}`);
       });
   }, []);
   const { children } = props;

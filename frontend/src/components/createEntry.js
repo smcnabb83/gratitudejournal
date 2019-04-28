@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import Axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import { SetErrors } from './errorDisplay';
+import UserContext from './context/UserContext';
 
 import { FormPage, FormMainBlock, FormInput } from './styles/formstyles';
 
@@ -23,6 +24,7 @@ const CreateEntry = () => {
   const [entry, setEntry] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoginError, setIsLoginError] = useState(false);
+  const User = useContext(UserContext);
 
   const formData = { title, entry };
 
@@ -30,7 +32,7 @@ const CreateEntry = () => {
     return <Redirect to="/" />;
   }
 
-  if (isLoginError) {
+  if (isLoginError || !User.UserID) {
     return <Redirect to="/logon" />;
   }
 

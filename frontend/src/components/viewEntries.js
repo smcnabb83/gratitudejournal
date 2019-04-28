@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { Redirect } from 'react-router-dom';
 import Styled from 'styled-components';
 import axios from 'axios';
 import Markdown from 'react-remarkable';
 import PropTypes from 'proptypes';
+import UserContext from './context/UserContext';
 
 const ViewLayout = Styled.div`
     display: grid;
@@ -61,6 +63,7 @@ const EntryTemplate = props => {
 const ViewEntries = () => {
   const [entries, setEntries] = useState();
   const [currentEntryBody, setCurrentEntryBody] = useState();
+  const User = useContext(UserContext);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -72,6 +75,9 @@ const ViewEntries = () => {
 
     fetchData();
   }, []);
+  if (!User.UserID) {
+    return <Redirect to="/logon" />;
+  }
   return (
     <ViewLayout>
       <EntriesArea>
