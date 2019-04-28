@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import Cookies from 'js-cookie';
 import { SetErrors } from './errorDisplay';
 import UserContext from './context/UserContext';
 
@@ -37,6 +38,16 @@ const Header = () => {
       <Link hidden={!User.UserID} onClick={() => SetErrors(null)} to="/entries">
         My Entries
       </Link>
+      <button
+        type="button"
+        onClick={() => {
+          Cookies.remove('userData');
+          User.SetUserID(false);
+        }}
+        hidden={!User.UserID}
+      >
+        Log Out
+      </button>
     </HeaderStyle>
   );
 };
