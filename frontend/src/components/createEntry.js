@@ -80,7 +80,7 @@ const CreateEntry = () => {
         </button>
       </FormMainBlock>
       <EditPreview className="Preview">
-        <h1 cssClass="title">{title}</h1>
+        <h1 className="title">{title}</h1>
         <Markdown source={entry} />
       </EditPreview>
     </FormPage>
